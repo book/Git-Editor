@@ -2,8 +2,18 @@ package Git::Sed;
 
 use warnings;
 use strict;
+use Git::Repository 1.14 'Log';
 
 our $VERSION = '0.01';
+
+sub new {
+    my ( $class, @args ) = @_;
+    return bless {
+        r      => Git::Repository->new(@args),
+        mapper => {},
+        rules  => {},
+    }, $class;
+}
 
 1;
 
