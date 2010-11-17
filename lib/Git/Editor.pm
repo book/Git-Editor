@@ -41,7 +41,7 @@ sub generate_code {
     # generate the code
     return << "EOT";
 sub {
-    my ($commit) = @_;
+    my (\$commit) = @_;
     my \$T = \$commit->{tree};
     my \@P = \@{\$commit->{parent}};
     my \$M = \$commit->{message};
@@ -66,6 +66,7 @@ sub process_revlist {
     my ( $self, @revlist ) = @_;
     @revlist = qw( --all --date-order ) if !@revlist;
     my $r = $self->repository;
+    my $mapper = $self->{mapper};
 
     # rewrite the commits
     my $iter = $r->log( '--reverse', @revlist );
