@@ -17,8 +17,8 @@ sub new {
 
 sub generate_code {
     my ( $self, $code, $source, $line ) = @_;
-    $source = (caller)[1] if !defined $source;
-    $line   = (caller)[2] if !defined $line;
+    ( $source, $line ) = (caller)[ 1, 2 ] if !defined $source;
+    $line = 'unknown' if !defined $line;
 
     # remove code indentation
     my ($indent) = $code =~ /^(\s+)/g;
