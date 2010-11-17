@@ -34,32 +34,52 @@ sub generate_code {
     ( $source, $line ) = (caller)[ 1, 2 ] if !defined $source;
     $line = 'unknown' if !defined $line;
 
-    # remove code indentation
+    # remove code indentation based on the first line
+    $code = '' if !defined $code;
     my ($indent) = $code =~ /^(\s+)/g;
-    $code =~ s/^$indent//gm;
+    $code =~ s/^$indent//gm if defined $indent;
 
     # generate the code
     return << "EOT";
+package $self->{package};
 sub {
-    my (\$commit) = @_;
-    my \$T = \$commit->{tree};
-    my \@P = \@{\$commit->{parent}};
-    my \$M = \$commit->{message};
-    my (\$an, \$ae, \$ad) = \$commit->{author} =~ /^(.*) <(.*)> (.*)\$/;
-    my (\$cn, \$ce, \$cd) = \$commit->{committer} =~ /^(.*) <(.*)> (.*)\$/;
-    {
 # line $line $source
 $code
-    }
-    return {
-        tree      => \$T,
-        parent    => \\\@P,
-        author    => "\$an <\$ae> \$ad",
-        committer => "\$cn <\$ce> \$cd",
-        message   => \$M,
-    };
 }
 EOT
+}
+
+sub execute_code {
+    my ( $self, $code, $commit ) = @_;
+    my $pkg = $self->{package};
+
+    # use package variables
+    # that will be accessible from the coderef scope
+    {
+        no strict 'refs';
+        ${"$pkg\::H"} = $commit->{commit};
+        ${"$pkg\::T"} = $commit->{tree};
+        @{"$pkg\::P"} = @{ $commit->{parent} };
+        ${"$pkg\::M"} = $commit->{message};
+        ( ${"$pkg\::an"}, ${"$pkg\::ae"}, ${"$pkg\::ad"} )
+            = $commit->{author} =~ /^(.*) <(.*)> (.*)$/;
+        ( ${"$pkg\::cn"}, ${"$pkg\::ce"}, ${"$pkg\::cd"} )
+            = $commit->{committer} =~ /^(.*) <(.*)> (.*)$/;
+    }
+
+    # call the code
+    $code->();
+
+    # create the new commit information structure
+    no strict 'refs';
+    return {
+        commit    => $commit->{commit},
+        tree      => ${"$pkg\::T"},
+        parent    => \@{"$pkg\::P"},
+        author    => qq{${"$pkg\::an"} <${"$pkg\::ae"}> ${"$pkg\::ad"}},
+        committer => qq{${"$pkg\::cn"} <${"$pkg\::ce"}> ${"$pkg\::cd"}},
+        message   => ${"$pkg\::M"},
+    };
 }
 
 sub process_revlist {
