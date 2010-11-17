@@ -15,15 +15,17 @@ sub new {
     }, $class;
 }
 
-sub compile {
-    my ( $self, $source, $line, $code ) = @_;
+sub generate_code {
+    my ( $self, $code, $source, $line ) = @_;
+    $source = (caller)[1] if !defined $source;
+    $line   = (caller)[2] if !defined $line;
 
     # remove code indentation
     my ($indent) = $code =~ /^(\s+)/g;
     $code =~ s/^$indent//gm;
 
-    # compile the code
-    return eval << "EOT";
+    # generate the code
+    return << "EOT";
 sub {
     my ($commit) = @_;
     my \$T = \$commit->{tree};
