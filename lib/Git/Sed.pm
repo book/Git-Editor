@@ -46,6 +46,49 @@ $code
 EOT
 }
 
+sub process_revlist {
+    my ( $self, @revlist ) = @_;
+
+    my ( $r, $mapper ) = @{$self}{qw( r mapper )};
+
+    # rewrite the commits
+    my $iter = $r->log( '--reverse', @revlist );
+    while ( my $commit = $iter->next ) {
+
+        # keep the old id
+        my $old_id = $commit->{commit};
+
+        # fetch the new commit structure
+        $commit = $self->process_commit(
+            $old_id => {
+                parent    => [ $commit->parent ],
+                author    => $commit->{author},
+                committer => $commit->{committer},
+                message   => $commit->{subject}
+                    . ( length $commit->{body} ? "\n\n$commit->{body}" : '' );
+            }
+        );
+
+        # create the new commit object
+        my ($new_id) = $r->run(
+            { input => $commit->{message} },
+            'commit-tree',
+            $commit->{tree},
+            map { ( '-p' => $_ ) }
+                map { tr/_//d ? $_ : $mapper->{$_} } @{ $commit->{parent} }
+        );
+
+        # store the new id in the mapper
+        $mapper->{$old_id} = $new_id;
+    }
+
+    # rewrite the heads
+    my @heads = $r->run(qw( show-ref --heads ));
+
+    # rewrite the tags
+    my @tags = $r->run(qw( show-ref --tags ));
+}
+
 1;
 
 __END__
