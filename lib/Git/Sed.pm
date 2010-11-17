@@ -15,6 +15,37 @@ sub new {
     }, $class;
 }
 
+sub compile {
+    my ( $self, $source, $line, $code ) = @_;
+
+    # remove code indentation
+    my ($indent) = $code =~ /^(\s+)/g;
+    $code =~ s/^$indent//gm;
+
+    # compile the code
+    return eval << "EOT";
+sub {
+    my ($commit) = @_;
+    my \$T = \$commit->{tree};
+    my \@P = \@{\$commit->{parent}};
+    my \$M = \$commit->{message};
+    my (\$an, \$ae, \$ad) = \$commit->{author} =~ /^(.*) <(.*)> (.*)\$/;
+    my (\$cn, \$ce, \$cd) = \$commit->{committer} =~ /^(.*) <(.*)> (.*)\$/;
+    {
+# line $line $source
+$code
+    }
+    return {
+        tree      => \$T,
+        parent    => \\\@P,
+        author    => "\$an <\$ae> \$ad",
+        committer => "\$cn <\$ce> \$cd",
+        message   => \$M,
+    };
+}
+EOT
+}
+
 1;
 
 __END__
