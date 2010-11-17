@@ -64,8 +64,8 @@ EOT
 
 sub process_revlist {
     my ( $self, @revlist ) = @_;
-
-    my ( $r, $mapper ) = @{$self}{qw( r mapper )};
+    @revlist = qw( --all --date-order ) if !@revlist;
+    my $r = $self->repository;
 
     # rewrite the commits
     my $iter = $r->log( '--reverse', @revlist );
@@ -81,7 +81,7 @@ sub process_revlist {
                 author    => $commit->{author},
                 committer => $commit->{committer},
                 message   => $commit->{subject}
-                    . ( length $commit->{body} ? "\n\n$commit->{body}" : '' );
+                    . ( length $commit->{body} ? "\n\n$commit->{body}" : '' )
             }
         );
 
