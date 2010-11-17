@@ -3,8 +3,8 @@
 use Test::More tests => 1;
 
 BEGIN {
-    use_ok( 'Git::Sed' ) || print "Bail out!
+    use_ok( 'Git::Editor' ) || print "Bail out!
 ";
 }
 
-diag( "Testing Git::Sed $Git::Sed::VERSION, Perl $], $^X" );
+diag( "Testing Git::Editor $Git::Editor::VERSION, Perl $], $^X" );

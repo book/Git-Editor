@@ -3,14 +3,14 @@ use warnings;
 use Module::Build;
 
 my $builder = Module::Build->new(
-    module_name         => 'Git::Sed',
+    module_name         => 'Git::Editor',
     license             => 'perl',
     dist_author         => q{Philippe Bruhat (BooK) <book@cpan.org>},
-    dist_version_from   => 'lib/Git/Sed.pm',
+    dist_version_from   => 'lib/Git/Editor.pm',
     build_requires => {
         'Test::More' => 0,
     },
-    add_to_cleanup      => [ 'Git-Sed-*' ],
+    add_to_cleanup      => [ 'Git-Editor-*' ],
     create_makefile_pl => 'traditional',
 );
 

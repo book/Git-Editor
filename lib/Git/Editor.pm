@@ -1,4 +1,4 @@
-package Git::Sed;
+package Git::Editor;
 
 use warnings;
 use strict;
@@ -97,7 +97,7 @@ __END__
 
 =head1 NAME
 
-Git::Sed - The great new Git::Sed!
+Git::Editor - The great new Git::Editor!
 
 =head1 SYNOPSIS
 
@@ -105,9 +105,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use Git::Sed;
+    use Git::Editor;
 
-    my $foo = Git::Sed->new();
+    my $foo = Git::Editor->new();
     ...
 
 =head1 AUTHOR
@@ -116,8 +116,8 @@ Philippe Bruhat (BooK), C<< <book at cpan.org> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-git-sed at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Git-Sed>.  I will be notified, and then you'll
+Please report any bugs or feature requests to C<bug-git-editor at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Git-Editor>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -127,7 +127,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Git::Sed
+    perldoc Git::Editor
 
 
 You can also look for information at:
@@ -136,19 +136,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Git-Sed>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Git-Editor>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/Git-Sed>
+L<http://annocpan.org/dist/Git-Editor>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/Git-Sed>
+L<http://cpanratings.perl.org/d/Git-Editor>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Git-Sed/>
+L<http://search.cpan.org/dist/Git-Editor/>
 
 =back
 

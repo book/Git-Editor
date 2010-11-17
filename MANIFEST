@@ -3,7 +3,7 @@ Changes
 MANIFEST
 Makefile.PL
 README
-lib/Git/Sed.pm
+lib/Git/Editor.pm
 t/00-load.t
 t/manifest.t
 t/pod-coverage.t

@@ -1,4 +1,4 @@
-Git-Sed
+Git-Editor
 
 The README is used to introduce the module and provide instructions on
 how to install the module, any machine dependencies it may have (for
@@ -33,21 +33,21 @@ SUPPORT AND DOCUMENTATION
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc Git::Sed
+    perldoc Git::Editor
 
 You can also look for information at:
 
     RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Git-Sed
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Git-Editor
 
     AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Git-Sed
+        http://annocpan.org/dist/Git-Editor
 
     CPAN Ratings
-        http://cpanratings.perl.org/d/Git-Sed
+        http://cpanratings.perl.org/d/Git-Editor
 
     Search CPAN
-        http://search.cpan.org/dist/Git-Sed/
+        http://search.cpan.org/dist/Git-Editor/
 
 
 LICENSE AND COPYRIGHT
