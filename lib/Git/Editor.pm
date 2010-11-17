@@ -6,13 +6,27 @@ use Git::Repository 1.14 'Log';
 
 our $VERSION = '0.01';
 
+# some quick accessors
+for my $attr (qw( repository package )) {
+    no strict 'refs';
+    *$attr = sub { return ref $_[0] ? $_[0]{$attr} : () };
+}
+
 sub new {
     my ( $class, @args ) = @_;
-    return bless {
-        r      => Git::Repository->new(@args),
-        mapper => {},
-        rules  => {},
+
+    # create the object instance
+    my $self = bless {
+        repository => Git::Repository->new(@args),
+        mapper     => {},
+        rules      => {},
     }, $class;
+
+    # the instance's private package
+    $self =~ /0x([0-9a-f]+)/;
+    $self->{package} = "Git::Editor::Scratch::$1";
+
+    return $self;
 }
 
 sub generate_code {
