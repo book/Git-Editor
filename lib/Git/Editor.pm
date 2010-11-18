@@ -42,6 +42,7 @@ sub generate_code {
     # generate the code
     return << "EOT";
 package $self->{package};
+our ( \$H, \$T, \@P, \$M, \$an, \$ae, \$ad, \$cn, \$ce, \$cd );
 sub {
 # line $line $source
 $code
