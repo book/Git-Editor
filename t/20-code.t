@@ -30,38 +30,44 @@ my $code;
 # line 1234 test.t
 is( $code = $ed->generate_code(), << "EOT", 'NOOP' );
 package $pkg;
+our ( \$H, \$T, \@P, \$M, \$an, \$ae, \$ad, \$cn, \$ce, \$cd );
 sub {
 # line 1234 test.t
 
 }
 EOT
-ok( eval { eval $ed->generate_code(); 1; }, 'code compiles' );
+ok( eval { eval $code; 1; }, 'code compiles' );
 
 # line 1235 test.t
 is( $code = $ed->generate_code( DUMMY => 'dummy.t' ),
     << "EOT", 'DUMMY file' );
 package $pkg;
+our ( \$H, \$T, \@P, \$M, \$an, \$ae, \$ad, \$cn, \$ce, \$cd );
 sub {
 # line unknown dummy.t
 DUMMY
 }
 EOT
-ok( eval { eval $ed->generate_code(); 1; }, 'code compiles' );
+ok( eval { eval $code; 1; }, 'code compiles' );
 
 # line 1236 test.t
 is( $code = $ed->generate_code( DUMMY => 'dummy.t', 4321 ),
     << "EOT", 'DUMMY file line' );
 package $pkg;
+our ( \$H, \$T, \@P, \$M, \$an, \$ae, \$ad, \$cn, \$ce, \$cd );
 sub {
 # line 4321 dummy.t
 DUMMY
 }
 EOT
-ok( eval { eval $ed->generate_code(); 1; }, 'code compiles' );
+ok( eval { eval $code; 1; }, 'code compiles' );
 
 # test code execution
 my $coderef;
-ok( eval { $coderef = eval $ed->generate_code(); 1; }, 'NOOP code compiles' );
+
+# NOOP
+$code = $ed->generate_code();
+ok( eval { $coderef = eval $code; 1; }, 'NOOP code compiles' );
 my $commit = {
     commit    => 'ebb3aa2746cfef88a54b5d1f335d0b51d269f3d5',
     tree      => '2a6993bd6529fb3d541204d056a6054cb7b6b812',
@@ -71,5 +77,16 @@ my $commit = {
     message   => 'rename the project to Git-Editor',
 };
 
-my $same = $ed->execute_code( $coderef => $commit );
-is_deeply( $same, $commit, 'commit not modified by NOOP' );
+my $result = $ed->execute_code( $coderef => $commit );
+is_deeply( $result, $commit, 'commit not modified by NOOP' );
+
+# REV
+$code = $ed->generate_code(' $M = reverse $M');
+ok( eval { $coderef = eval $code; 1; }, 'REV code compiles' );
+$result = $ed->execute_code( $coderef => $commit );
+is_deeply(
+    $result,
+    { %$commit, message => 'rotidE-tiG ot tcejorp eht emaner' },
+    'commit modified by REV'
+);
+
