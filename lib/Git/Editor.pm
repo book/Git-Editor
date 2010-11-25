@@ -50,6 +50,11 @@ $code
 EOT
 }
 
+sub compile_code {
+    my ( $self, $code, $source, $line ) = @_;
+    return eval $self->generate_code( $code, $source, $line );
+}
+
 sub execute_code {
     my ( $self, $code, $commit ) = @_;
     my $pkg = $self->{package};

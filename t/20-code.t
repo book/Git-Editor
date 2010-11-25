@@ -66,8 +66,8 @@ ok( eval { eval $code; 1; }, 'code compiles' );
 my $coderef;
 
 # NOOP
-$code = $ed->generate_code();
-ok( eval { $coderef = eval $code; 1; }, 'NOOP code compiles' );
+ok( eval { $coderef = $ed->compile_code; 1; }, 'NOOP code compiles' );
+is( ref $coderef, 'CODE', 'NOOP code returns a coderef' );
 my $commit = {
     commit    => 'ebb3aa2746cfef88a54b5d1f335d0b51d269f3d5',
     tree      => '2a6993bd6529fb3d541204d056a6054cb7b6b812',
