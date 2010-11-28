@@ -110,6 +110,32 @@ sub add_rule {
         [ $code, $self->{count}++ ];
 }
 
+sub compile_script {
+    my ( $self, $file ) = @_;
+    my ( $rule, $code ) = ( '', '' );
+    my $line;
+
+    local @ARGV = ($file);
+    while (<>) {
+        next if /^#/;    # skip comments
+
+        # generate code
+        /^\S/ && do {
+            $self->add_rule(
+                $rule => $self->compile_code( $code, $file, $line ) );
+
+            # prepare next block of code
+            $line = $. + 1;
+            $rule = $_;
+            $code = '';
+            next;
+        };
+
+        # update the code block
+        $code .= $_;
+    }
+}
+
 sub process_revlist {
     my ( $self, @revlist ) = @_;
     @revlist = qw( --all --date-order ) if !@revlist;
