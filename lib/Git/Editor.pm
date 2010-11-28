@@ -2,6 +2,7 @@ package Git::Editor;
 
 use warnings;
 use strict;
+use Carp;
 use Git::Repository 1.14 'Log';
 
 our $VERSION = '0.01';
@@ -20,6 +21,7 @@ sub new {
         repository => Git::Repository->new(@args),
         mapper     => {},
         rules      => {},
+        count      => 0,
     }, $class;
 
     # the instance's private package
@@ -92,6 +94,20 @@ sub execute_code {
         committer => qq{${"$pkg\::cn"} <${"$pkg\::ce"}> ${"$pkg\::cd"}},
         message   => ${"$pkg\::M"},
     };
+}
+
+sub add_rule {
+    my ( $self, $rule, $code ) = @_;
+
+    # make sure we have a code ref
+    my ( $type, $target ) = split /\s+/, $rule, 2;
+
+    # check rule type is valid
+    croak "Unknown rule type: $type" if $type !~ /^(?:commit)$/;
+
+    # store the code
+    push @{ $self->{rules}{$type}{$target} ||= [] },
+        [ $code, $self->{count}++ ];
 }
 
 sub process_revlist {
