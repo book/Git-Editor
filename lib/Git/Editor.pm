@@ -26,6 +26,12 @@ sub new {
     $self =~ /0x([0-9a-f]+)/;
     $self->{package} = "Git::Editor::Scratch::$1";
 
+    # add some functions to the private package
+    for my $meth (qw( remap )) {
+        no strict 'refs';
+        *{"$self->{package}::$meth"} = sub { $self->$meth(@_) };
+    }
+
     return $self;
 }
 
@@ -130,6 +136,12 @@ sub process_revlist {
 
     # rewrite the tags
     my @tags = $r->run(qw( show-ref --tags ));
+}
+
+# methods to be shared with the code
+sub remap {
+    $_[0]{mapper}{ $_[1] } = $_[2] if @_ > 2;
+    $_[0]{mapper}{ $_[1] } ||= $_[1]; # auto-remap to oneself
 }
 
 1;
