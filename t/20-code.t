@@ -1,24 +1,17 @@
 use strict;
 use warnings;
 use Test::More;
-use File::Temp qw( tempdir );
-use Cwd;
 use Git::Repository;
 use Git::Editor;
+use Test::Git;
 
 # check prerequisites
-plan skip_all => 'Default git binary not found in PATH'
-    if !Git::Repository::Command::_is_git('git');
+has_git();
 
 plan 'no_plan';
 
 # a place to put a git repository
-my $dir = tempdir( CLEANUP => 1 );
-my $home = cwd;
-chdir $dir;
-my $r = Git::Repository->create('init');
-isa_ok( $r, 'Git::Repository' );
-chdir $home;
+my $r = test_repository;
 
 # get an editor
 my $ed = Git::Editor->new( git_dir => $r->git_dir );
