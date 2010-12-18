@@ -151,7 +151,8 @@ sub process_revlist {
 
         # fetch the new commit structure
         $commit = $self->process_commit(
-            $old_id => {
+            {   commit    => $old_id,
+                tree      => $commit->{tree},
                 parent    => [ $commit->parent ],
                 author    => $commit->{author},
                 committer => $commit->{committer},
@@ -160,24 +161,29 @@ sub process_revlist {
             }
         );
 
+        # remap parent commits
+        # parent ids containing a '_' are not remapped
+        $commit->{parent} = [ map { tr/_//d ? $_ : $self->remap($_) }
+                @{ $commit->{parent} } ];
+
         # create the new commit object
-        my ($new_id) = $r->run(
-            { input => $commit->{message} },
-            'commit-tree',
-            $commit->{tree},
-            map { ( '-p' => $_ ) }
-                map { tr/_//d ? $_ : $mapper->{$_} } @{ $commit->{parent} }
-        );
+        my ($new_id) = $r->run( { input => $commit->{message} },
+            'commit-tree', $commit->{tree},
+            map { ( '-p' => $_ ) } @{ $commit->{parent} } );
 
         # store the new id in the mapper
-        $mapper->{$old_id} = $new_id;
+        $self->remap( $old_id => $new_id );
     }
 
     # rewrite the heads
-    my @heads = $r->run(qw( show-ref --heads ));
+    my %heads = reverse map { split / / } $r->run(qw( show-ref --heads ));
+    while ( my ($head, $id ) = each %heads ) {
+        $r->run( 'update-ref' => $head, $self->remap($id) );
+    }
 
     # rewrite the tags
-    my @tags = $r->run(qw( show-ref --tags ));
+    my %tags = reverse map { split / / } $r->run(qw( show-ref --tags ));
+    # TODO: remap the tags
 }
 
 sub process_commit {
@@ -201,7 +207,7 @@ sub process_commit {
 # methods to be shared with the code
 sub remap {
     $_[0]{mapper}{ $_[1] } = $_[2] if @_ > 2;
-    $_[0]{mapper}{ $_[1] } ||= $_[1]; # auto-remap to oneself
+    $_[0]{mapper}{ $_[1] } ||= $_[1];    # auto-remap to oneself
 }
 
 1;
