@@ -180,6 +180,24 @@ sub process_revlist {
     my @tags = $r->run(qw( show-ref --tags ));
 }
 
+sub process_commit {
+    my ( $self, $commit ) = @_;
+    my $rules = $self->{rules};
+    my @code;
+
+    # find all matching rules and collect code to apply
+    $rules->{commit}{$_} && push @code, @{ $rules->{commit}{'*'} }
+        for '*', $commit->{commit};
+
+    # order code
+    @code = map { $_->[0] } sort { $a->[1] <=> $b->[1] } @code;
+
+    # successively apply the code
+    $commit = $self->execute_code( $_ => $commit ) for @code;
+
+    return $commit;
+}
+
 # methods to be shared with the code
 sub remap {
     $_[0]{mapper}{ $_[1] } = $_[2] if @_ > 2;
