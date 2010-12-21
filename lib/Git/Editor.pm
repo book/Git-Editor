@@ -3,7 +3,7 @@ package Git::Editor;
 use warnings;
 use strict;
 use Carp;
-use Git::Repository 1.14 'Log';
+use Git::Repository 1.15 'Log';
 
 our $VERSION = '0.01';
 
