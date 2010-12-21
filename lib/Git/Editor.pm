@@ -152,12 +152,11 @@ sub process_revlist {
         # fetch the new commit structure
         $commit = $self->process_commit(
             {   commit    => $old_id,
-                tree      => $commit->{tree},
+                tree      => $commit->tree,
                 parent    => [ $commit->parent ],
-                author    => $commit->{author},
-                committer => $commit->{committer},
-                message   => $commit->{subject}
-                    . ( length $commit->{body} ? "\n\n$commit->{body}" : '' )
+                author    => $commit->author,
+                committer => $commit->committer,
+                message   => $commit->message,
             }
         );
 
