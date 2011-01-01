@@ -187,6 +187,10 @@ sub process_revlist {
             $r->run( 'update-ref' => $ref, $self->remap($id) );
         }
         elsif ( $type{$id} eq 'tag' ) {    # annotated tag
+            my $content = $r->run( 'cat-file', 'tag', $id );
+            $content =~ s/(?<=^object )([a-f0-9]{40})$/$self->remap($1)/me;
+            my $tag_id = $r->run( mktag => { input => $content } );
+            $r->run( 'update-ref' => $ref, $tag_id );
         }
         else {                             # uh?
             carp "Unhandled type '$type{$id}' for ref '$ref' ($id)";

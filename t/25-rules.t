@@ -58,8 +58,5 @@ is( $new[-1]{subject}, 'new file with one line', 'fixed commit message' );
 ($first) = split / /, $r->run( 'show-ref', 'refs/tags/first' );
 is( $first, $new[-1]{commit}, 'tag points to new commit' );
 ($annotated) = split / /, $r->run( 'show-ref', 'refs/tags/annotated' );
+isnt( $annotated, $tag, 'annotated tag modified' );
 
-TODO: {
-    local $TODO = 'annotated tags are not handled yet';
-    isnt( $annotated, $tag, 'annotated tag modified' );
-}
