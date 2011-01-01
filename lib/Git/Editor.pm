@@ -189,6 +189,8 @@ sub process_revlist {
         elsif ( $type{$id} eq 'tag' ) {    # annotated tag
             my $content = $r->run( 'cat-file', 'tag', $id );
             $content =~ s/(?<=^object )([a-f0-9]{40})$/$self->remap($1)/me;
+            carp "$ref was signed -- New tag signature will be invalid"
+                if $content =~ /-----BEGIN PGP SIGNATURE-----/;
             my $tag_id = $r->run( mktag => { input => $content } );
             $r->run( 'update-ref' => $ref, $tag_id );
         }
