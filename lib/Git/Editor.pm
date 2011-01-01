@@ -174,15 +174,25 @@ sub process_revlist {
         $self->remap( $old_id => $new_id );
     }
 
-    # rewrite the heads
-    my %heads = reverse map { split / / } $r->run(qw( show-ref --heads ));
-    while ( my ($head, $id ) = each %heads ) {
-        $r->run( 'update-ref' => $head, $self->remap($id) );
+    # collect all refs and what they point to
+    my %refs = reverse map { split / / } $r->run(qw(show-ref --heads --tags));
+    my %type = map { ( split / / )[ 0, 1 ] } $r->run(
+        'cat-file' => '--batch-check',
+        { input => join "\n", values %refs }
+    );
+
+    # rewrite the heads and tags
+    while ( my ( $ref, $id ) = each %refs ) {
+        if ( $type{$id} eq 'commit' ) {    # simple ref
+            $r->run( 'update-ref' => $ref, $self->remap($id) );
+        }
+        elsif ( $type{$id} eq 'tag' ) {    # annotated tag
+        }
+        else {                             # uh?
+            carp "Unhandled type '$type{$id}' for ref '$ref' ($id)";
+        }
     }
 
-    # rewrite the tags
-    my %tags = reverse map { split / / } $r->run(qw( show-ref --tags ));
-    # TODO: remap the tags
 }
 
 sub process_commit {
