@@ -1,15 +1,37 @@
 Git-Editor
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+"Git::Editor" provides the tools to create an editor for a Git
+repository.
 
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it to get an idea of the module's uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
+Objects in the Git object database are uniquely identified by their
+SHA-1 hash. It's not technically possible to modify an object, as the
+hash of the modified object will be different from the original hash,
+thus creating a new and different object.
+
+However, to the casual user, the unique relationship between a commit
+object and its id is largely irrelevant. When someone makes a typo in a
+commit message, "git commit --amend" allows to modify the most recent
+commit (of course, the truth is that a new commit object is created and
+the current branch is simply made to points to the newly created
+commit).
+
+If the commit having a typo is already the parent of several other
+commits, simply creating a new, modified commit is not enough, as the
+children of the original commit will still point to it. When doing such
+modifications, one wants to preserve the "identity" of the original
+commit, and therefore modify (or rather, re-create) all commits that
+directly or indirectly depend on it, and not keep any reference to
+them.
+
+"Git::Editor" lets one assemble modification rules ("apply this code to
+every commit matching these conditions") and apply them on a list of
+commits (obtained through "git rev-list"). All descendant commits (in
+the provided commit list) will be rewritten to point to the newly
+created commits.
+
+The included git-editor program is the recommended tool to edit a Git
+repository (rather than rolling your own using Git::Editor> directly).
+
 
 
 INSTALLATION
