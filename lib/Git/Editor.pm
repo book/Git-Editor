@@ -231,18 +231,99 @@ __END__
 
 =head1 NAME
 
-Git::Editor - The great new Git::Editor!
+Git::Editor - Rewrite a Git repository using Perl snippets
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+    # see git-editor for user-level documentation
 
-Perhaps a little code snippet.
+    # build your own editor
+    my $ed = Git::Editor->new();
+    my $coderef = $ed->compile_code('$M =~ s/foo/bar/g')
+    $ed->add_rule( 'commit *' => $coderef );
+    $ed->process_revlist( '--all' );
 
-    use Git::Editor;
+=head1 DESCRIPTION
 
-    my $foo = Git::Editor->new();
-    ...
+C<Git::Editor> contains all routines used by the C<git-editor>
+command-line script to write new commits in a Git repository
+based on existing ones.
+
+A C<Git::Editor> object collects snippets of code that will be used to
+modify the content of commit objects in the repository, and then replace
+them.
+
+
+
+=head1 ACCESSORS
+
+=head2 repository()
+
+Return the C<Git::Repository> object used to interface the editor with
+the repository.
+
+=head2 package()
+
+Each coderef is executed in its own package under the
+C<Git::Editor::Scratch::> namespace.
+
+This method returns the fully qualified package name.
+
+=head1 METHODS
+
+=head2 new( @args )
+
+Create and return a new C<Git::Editor> object. The parameters in C<@args>
+are passed to C<< Git::Repository->new() >> to create the C<Git::Repository>
+object.
+
+=head2 add_rule( $rule => coderef );
+
+FIXME
+
+=head2 generate_code( $code )
+
+Given a snippet of code, return the full source code to the anonymous
+subroutine used to process a commit. This code is compilable with C<eval "">.
+
+=head2 compile_code( $code )
+
+Compile the full subroutine code produced by C<generate_code> and return
+the corresponding code reference.
+
+=head2 execute_code( $coderef => $commit )
+
+Call the given C<$coderef> (as obtained by C<compile_code>) with the
+given C<$commit> hash as a parameter.
+
+=head2 process_commit( $commit )
+
+Execute all matching rules on a commit, potentially creating a new one.
+
+=head2 process_revlist( @args )
+
+Process all the commits in the given revlist using the rules list.
+
+=head2 compile_script( $file )
+
+Read a script file and generate the rules list and the code references.
+
+=head1 FUNCTIONS AVAILABLE TO THE CODE SNIPPETS
+
+Some C<Git::Editor> methods are also available as functions I<within>
+a code snippet.
+
+=head2 remap( $old [, $new ] )
+
+Each time a commit is I<modified> by the editor, a new commit is actually
+created, with a different id. The editor maintains a mapping of I<old-to-new>
+commit id.
+
+Returns the new id corresponding to the old one. Returns the old id
+if no mapping is defined for the old id.
+
+If C<$new> is given, it is stored as the id corresponding to the C<$old> id.
+
 
 =head1 AUTHOR
 
