@@ -245,14 +245,40 @@ Git::Editor - Rewrite a Git repository using Perl snippets
 
 =head1 DESCRIPTION
 
-C<Git::Editor> contains all routines used by the C<git-editor>
-command-line script to write new commits in a Git repository
-based on existing ones.
+C<Git::Editor> provides the tools to create an editor for a Git repository.
+
+Objects in the Git object database are uniquely identified by their
+SHA-1 hash. It's not technically possible to I<modify> an object,
+as the hash of the modified object will be different from the original
+hash, thus creating a I<new> and I<different> object.
+
+However, to the casual user, the unique relationship between a commit
+object and its id is largely irrelevant. When someone makes a typo in a
+commit message, C<git commit --amend> allows to I<modify> the most recent
+commit (of course, the truth is that a new commit object is created and
+the current branch is simply made to points to the newly created commit).
+
+If the commit having a typo is already the parent of several other
+commits, simply creating a new, modified commit is not enough, as the
+children of the original commit will still point to it. When doing such
+modifications, one wants to preserve the "identity" of the original
+commit, and therefore modify (or rather, re-create) all commits that
+directly or indirectly depend on it, and not keep any reference to them.
+
+C<Git::Editor> lets one assemble modification rules ("apply this code
+to every commit matching these conditions") and apply them on a list
+of commits (obtained through C<git rev-list>). All descendant commits
+(in the provided commit list) will be rewritten to point to the newly
+created commits.
 
 A C<Git::Editor> object collects snippets of code that will be used to
 modify the content of commit objects in the repository, and then replace
 them.
 
+C<Git::Editor> provides all routines used by the C<git-editor>
+command-line script to write new commits in a Git repository based on
+existing ones. C<git-editor> is the B<recommended> tool to edit a Git
+repository (rather than rolling your own using C<Git::Editor> directly).
 
 
 =head1 ACCESSORS
